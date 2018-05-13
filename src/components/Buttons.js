@@ -23,13 +23,13 @@ const Buttons = ({
       color="#ff9a2b"
       disabled={userSpecialAttacks === MAX_SPECIAL_ATTACKS}
       onClick={onSpecialAttack}
-      text="Special Attack"
+      text={`Special Attack (${MAX_SPECIAL_ATTACKS - userSpecialAttacks})`}
     />
     <Button
       color="#76ff7e"
       disabled={userHealings === MAX_HEALINGS}
       onClick={onHeal}
-      text="Heal"
+      text={`Heal (${MAX_HEALINGS - userHealings})`}
     />
     <Button
       color="#c7c7c7"
