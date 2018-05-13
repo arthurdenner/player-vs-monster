@@ -1,0 +1,90 @@
+:root {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.game {
+  padding: 2em 10em;
+  text-align: center;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 2em;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 5em;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.healthbar {
+  display: flex;
+  width: 80%;
+  height: 40px;
+  background-color: #eee;
+  transition: width 500ms;
+  align-items: center;
+  justify-content: center;
+  margin: 1em 0 !important;
+  border-radius: 3px;
+}
+
+button {
+  width: 100%;
+  background-color: #eee;
+  padding: 10px;
+  border: none;
+  border-radius: 3px;
+  box-shadow: 0 1px 1px black;
+  transition: all 0.1s;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+}
+
+label > input {
+  margin-top: 0.25em;
+}
+
+ul {
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 1em;
+}
+
+.round {
+  font-size: 12px;
+  font-weight: 400;
+  list-style: none;
+  border: 1px solid;
+  padding: 0.5em;
+  border-radius: 3px;
+}
+
+.player-round {
+  color: blue;
+  background-color: #e4e8ff;
+}
+
+.monster-round {
+  color: red;
+  background-color: #ffc0c1;
+}

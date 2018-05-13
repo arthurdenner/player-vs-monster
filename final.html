@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Player x Monster - React Workshop</title>
+  <link rel="stylesheet" href="app.css">
+  <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+</head>
+
+<body>
+  <div id="app">
+  </div>
+
+  <script type="text/babel">
+    class Player extends React.Component {
+      render() {
+        return (
+          <div className="text-center">
+            <label>
+              {this.props.label}
+              <input
+                id={this.props.id}
+                className="text-center"
+                onChange={this.props.onChange}
+                value={this.props.inputValue}
+              />
+            </label>
+            <div
+              className="healthbar"
+              style={{
+                backgroundColor: 'green',
+                margin: 0,
+                color: 'white',
+                width: this.props.healthValue + '%'
+              }}
+            >
+              {this.props.healthValue}
+            </div>
+          </div>
+        )
+      }
+    }
+
+    class Players extends React.Component {
+      render() {
+        return (
+          <section className="row">
+            <Player
+              id="playerName"
+              label="Your name:"
+              healthValue={this.props.playerHealth}
+              onChange={this.props.onNameChange}
+              inputValue={this.props.playerName}
+            />
+            <Player
+              id="monsterName"
+              label="Monster name:"
+              healthValue={this.props.monsterHealth}
+              onChange={this.props.onNameChange}
+              inputValue={this.props.monsterName}
+            />
+          </section>
+        )
+      }
+    }
+
+    class Button extends React.Component {
+      render() {
+        return (
+          <button
+            disabled={this.props.disabled || false}
+            onClick={this.props.onClick}
+            style={{ backgroundColor: this.props.color }}
+          >
+            {this.props.text}
+          </button>
+        )
+      }
+    }
+
+    class Buttons extends React.Component {
+      render() {
+        return (
+          <div className="buttons">
+            <Button
+              color="#ff3f43"
+              onClick={this.props.onAttack}
+              text="Attack"
+            />
+            <Button
+              color="#ff9a2b"
+              disabled={this.props.maxSpecialAttacks === 3}
+              onClick={this.props.onSpecialAttack}
+              text="Special Attack"
+            />
+            <Button
+              color="#76ff7e"
+              disabled={this.props.maxHealings === 5}
+              onClick={this.props.onHeal}
+              text="Heal"
+            />
+            <Button
+              color="#c7c7c7"
+              onClick={this.props.onGiveUp}
+              text="Give up"
+            />
+          </div>
+        )
+      }
+    }
+
+    class Rounds extends React.Component {
+      render() {
+        return (
+          <ul>
+            {this.props.rounds.map((round, index) => (
+              <li
+                key={index}
+                className={round.isPlayer ? 'round player-round' : ' round monster-round'}
+              >
+                {round.text}
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    }
+
+    class App extends React.Component {
+      state = {
+        gameIsRunning: false,
+        playerName: 'You',
+        monsterName: 'Monster',
+        playerHealth: 100,
+        monsterHealth: 100,
+        maxSpecialAttacks: 0,
+        maxHealings: 0,
+        rounds: [],
+      };
+
+      startGame = () => {
+        this.setState({
+          gameIsRunning: true,
+          playerHealth: 100,
+          monsterHealth: 100,
+          maxSpecialAttacks: 0,
+          maxHealings: 0,
+          rounds: [],
+        });
+      }
+
+      generateDamage = (min, max) => {
+        return Math.max(Math.floor(Math.random() * max) + 1, min);
+      }
+
+      checkWin = () => {
+        if (this.state.monsterHealth <= 0) {
+          if (confirm('You won! New game?')) {
+            this.startGame();
+          } else {
+            this.setState({
+              gameIsRunning: false
+            })
+          }
+
+          return true;
+        } else if (this.state.playerHealth <= 0) {
+          if (confirm('You lost! New game?')) {
+            this.startGame();
+          } else {
+            this.setState({
+              gameIsRunning: false
+            })
+          }
+
+          return true;
+        }
+
+        return false;
+      }
+
+      monsterAttacks = () => {
+        const monsterDamage = this.generateDamage(1, 10);
+        let newPlayerHealth = this.state.playerHealth - monsterDamage;
+        const newRounds = [{
+          isPlayer: false,
+          text: `Monster hits the player by ${monsterDamage} points`,
+        }].concat(this.state.rounds);
+
+        if (newPlayerHealth < 0) {
+          newPlayerHealth = 0;
+        }
+
+        this.setState({
+          playerHealth: newPlayerHealth,
+          rounds: newRounds,
+        }, () => {
+          this.checkWin();
+        });
+      }
+
+      userAttacks = (min, max) => {
+        const playerDamage = this.generateDamage(min, max);
+        let newMonsterHealth = this.state.monsterHealth - playerDamage;
+        const newRounds = [{
+          isPlayer: true,
+          text: `Player hits the monster by ${playerDamage} points`,
+        }].concat(this.state.rounds);
+
+        if (newMonsterHealth < 0) {
+          newMonsterHealth = 0;
+        }
+
+        this.setState({
+          monsterHealth: newMonsterHealth,
+          rounds: newRounds,
+        }, () => {
+          if (this.checkWin()) {
+            return;
+          }
+
+          this.monsterAttacks();
+        });
+
+      }
+
+      handleNameChange = (event) => {
+        const field = event.target.id;
+        const value = event.target.value;
+
+        this.setState({
+          [field]: value
+        });
+      }
+
+      handleAttack = () => {
+        this.userAttacks(1, 10);
+      }
+
+      handleSpecialAttack = () => {
+        this.setState({
+          maxSpecialAttacks: this.state.maxSpecialAttacks + 1,
+        })
+
+        this.userAttacks(10, 20);
+      }
+
+      handleHeal = () => {
+        const healingAmount = this.generateDamage(5, 10);
+        let newPlayerHealth = this.state.playerHealth + healingAmount;
+        const newRounds = [{
+          isPlayer: true,
+          text: `Player heals by ${healingAmount} points`,
+        }].concat(this.state.rounds);
+
+        if (newPlayerHealth > 100) {
+          newPlayerHealth = 100;
+        }
+
+        this.setState({
+          playerHealth: newPlayerHealth,
+          maxHealings: this.state.maxHealings + 1,
+          rounds: newRounds,
+        }, () => {
+          this.monsterAttacks();
+        });
+      }
+
+      handleGiveUp = () => {
+        this.setState({
+          gameIsRunning: false
+        })
+      }
+
+      render() {
+        return (
+          <div className="game">
+            <Players
+              playerName={this.state.playerName}
+              monsterName={this.state.monsterName}
+              playerHealth={this.state.playerHealth}
+              monsterHealth={this.state.monsterHealth}
+              onNameChange={this.handleNameChange}
+            />
+            {this.state.gameIsRunning ? (
+              <Buttons
+                maxHealings={this.state.maxHealings}
+                maxSpecialAttacks={this.state.maxSpecialAttacks}
+                onAttack={this.handleAttack}
+                onSpecialAttack={this.handleSpecialAttack}
+                onHeal={this.handleHeal}
+                onGiveUp={this.handleGiveUp}
+              />
+            ): (
+              <Button
+                color="#76ff7e"
+                onClick={this.startGame}
+                text="Start a new game"
+              />
+            )}
+            {this.state.rounds.length > 0 && (
+              <Rounds rounds={this.state.rounds} />
+            )}
+          </div>
+        );
+      }
+    }
+
+    ReactDOM.render(<App />, document.getElementById('app'))
+  </script>
+
+</body>
+
+</html>
