@@ -12,8 +12,8 @@ class App extends Component {
     monsterName: 'Monster',
     playerHealth: 100,
     monsterHealth: 100,
-    maxSpecialAttacks: 0,
-    maxHealings: 0,
+    userSpecialAttacks: 0,
+    userHealings: 0,
     rounds: [],
   };
 
@@ -22,8 +22,8 @@ class App extends Component {
       gameIsRunning: true,
       playerHealth: 100,
       monsterHealth: 100,
-      maxSpecialAttacks: 0,
-      maxHealings: 0,
+      userSpecialAttacks: 0,
+      userHealings: 0,
       rounds: [],
     });
   }
@@ -119,7 +119,7 @@ class App extends Component {
 
   handleSpecialAttack = () => {
     this.setState({
-      maxSpecialAttacks: this.state.maxSpecialAttacks + 1,
+      userSpecialAttacks: this.state.userSpecialAttacks + 1,
     })
 
     this.userAttacks(10, 20);
@@ -139,7 +139,7 @@ class App extends Component {
 
     this.setState({
       playerHealth: newPlayerHealth,
-      maxHealings: this.state.maxHealings + 1,
+      userHealings: this.state.userHealings + 1,
       rounds: newRounds,
     }, () => {
       this.monsterAttacks();
@@ -153,19 +153,30 @@ class App extends Component {
   }
 
   render() {
+    const {
+      gameIsRunning,
+      monsterHealth,
+      monsterName,
+      playerHealth,
+      playerName,
+      rounds,
+      userHealings,
+      userSpecialAttacks,
+    } = this.state;
+
     return (
       <div className="game">
         <Players
-          playerName={this.state.playerName}
-          monsterName={this.state.monsterName}
-          playerHealth={this.state.playerHealth}
-          monsterHealth={this.state.monsterHealth}
+          playerName={playerName}
+          monsterName={monsterName}
+          playerHealth={playerHealth}
+          monsterHealth={monsterHealth}
           onNameChange={this.handleNameChange}
         />
-        {this.state.gameIsRunning ? (
+        {gameIsRunning ? (
           <Buttons
-            maxHealings={this.state.maxHealings}
-            maxSpecialAttacks={this.state.maxSpecialAttacks}
+            userHealings={userHealings}
+            userSpecialAttacks={userSpecialAttacks}
             onAttack={this.handleAttack}
             onSpecialAttack={this.handleSpecialAttack}
             onHeal={this.handleHeal}
@@ -178,8 +189,8 @@ class App extends Component {
             text="Start a new game"
           />
         )}
-        {this.state.rounds.length > 0 && (
-          <Rounds rounds={this.state.rounds} />
+        {rounds.length > 0 && (
+          <Rounds rounds={rounds} />
         )}
       </div>
     );

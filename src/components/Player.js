@@ -1,32 +1,37 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-class Player extends React.Component {
-  render() {
-    return (
-      <div className="text-center">
-        <label>
-          {this.props.label}
-          <input
-            id={this.props.id}
-            className="text-center"
-            onChange={this.props.onChange}
-            value={this.props.inputValue}
-          />
-        </label>
-        <div
-          className="healthbar"
-          style={{
-            backgroundColor: 'green',
-            margin: 0,
-            color: 'white',
-            width: this.props.healthValue + '%',
-          }}
-        >
-          {this.props.healthValue}
-        </div>
-      </div>
-    );
-  }
+const Player  = ({ healthValue, id, inputValue, label, onChange }) => (
+  <div className="text-center">
+    <label>
+      {label}
+      <input
+        id={id}
+        className="text-center"
+        onChange={onChange}
+        value={inputValue}
+      />
+    </label>
+    <div
+      className="healthbar"
+      style={{
+        backgroundColor: 'green',
+        margin: 0,
+        color: 'white',
+        width: healthValue + '%',
+      }}
+    >
+      {healthValue}
+    </div>
+  </div>
+);
+
+Player.propTypes = {
+  healthValue: PropTypes.number.isRequired,
+  id: PropTypes.string.isRequired,
+  inputValue: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
 }
 
 export default Player;
